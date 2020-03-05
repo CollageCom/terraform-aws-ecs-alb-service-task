@@ -77,6 +77,10 @@ resource "aws_ecs_task_definition" "default" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 # IAM
@@ -247,7 +251,6 @@ resource "aws_ecs_service" "ignore_changes_task_definition" {
   count                              = var.enabled && var.ignore_changes_task_definition ? 1 : 0
   name                               = module.default_label.id
   task_definition                    = "${join("", aws_ecs_task_definition.default.*.family)}:${join("", aws_ecs_task_definition.default.*.revision)}"
-  desired_count                      = var.desired_count
   deployment_maximum_percent         = var.deployment_maximum_percent
   deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
   health_check_grace_period_seconds  = var.health_check_grace_period_seconds
@@ -320,7 +323,7 @@ resource "aws_ecs_service" "ignore_changes_task_definition" {
   }
 
   lifecycle {
-    ignore_changes = [task_definition]
+    ignore_changes = [task_definition, desired_count]
   }
 }
 
@@ -328,7 +331,6 @@ resource "aws_ecs_service" "default" {
   count                              = var.enabled && var.ignore_changes_task_definition == false ? 1 : 0
   name                               = module.default_label.id
   task_definition                    = "${join("", aws_ecs_task_definition.default.*.family)}:${join("", aws_ecs_task_definition.default.*.revision)}"
-  desired_count                      = var.desired_count
   deployment_maximum_percent         = var.deployment_maximum_percent
   deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
   health_check_grace_period_seconds  = var.health_check_grace_period_seconds
