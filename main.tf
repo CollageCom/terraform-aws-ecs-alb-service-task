@@ -323,7 +323,7 @@ resource "aws_ecs_service" "ignore_changes_task_definition" {
   }
 
   lifecycle {
-    ignore_changes = [task_definition, desired_count]
+    ignore_changes = [task_definition, desired_count, load_balancer]
   }
 }
 
